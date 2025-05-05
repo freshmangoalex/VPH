@@ -1,0 +1,59 @@
+Desarrolla un sitio web completo para una campaña de prevención del Virus del Papiloma Humano (VPH) en México, inspirado estructuralmente en el sitio hepatitisc.mx, pero con estilo propio, dirigido a toda la población general, con enfoque comunicativo, accesible y educativo, que no criminaliza ni moraliza la sexualidad, sino que construye un espacio digital de confianza, consulta y claridad. Usa solo HTML5, CSS3 y, si es necesario, JavaScript puro para efectos suaves.
+
+1. ESTRUCTURA GENERAL
+Sitio tipo "landing page", de navegación vertical, fluida y con desplazamiento por anclas.
+
+Secciones:
+
+Encabezado fijo con logotipo (editable), nombre de la campaña y menú de navegación anclado.
+
+Introducción clara sobre el VPH: qué es, por qué importa, con lenguaje neutral y empático.
+
+Historia natural de la enfermedad: infección, persistencia, lesión, cáncer.
+
+Factores de riesgo (por ejemplo: múltiples parejas sexuales, no uso de condón, no vacunación), presentados como información objetiva.
+
+Prevención dividida en:
+
+Primaria (vacunación, educación sexual),
+
+Secundaria (Papanicolaou, VPH test),
+
+Terciaria (tratamientos disponibles).
+
+Llamados a la acción (CTA) con botón interactivo:
+
+Consulta el esquema de vacunación.
+
+Busca tu clínica más cercana.
+
+Contáctanos directamente.
+
+Pie de página con enlaces a fuentes oficiales (SSA, IMSS, OMS, etc.).
+
+2. ESTÉTICA Y ESTILO
+Diseño responsivo (mobile-first), compatible con celulares, tablets y escritorio.
+
+Paleta de colores cálida, amigable y profesional (sugerencia: tonos morados, blancos, azules).
+
+Tipografía clara, moderna y altamente legible.
+
+Las imágenes provendrán de una carpeta local llamada assets/. No incluir imágenes, solo placeholders (<img src="assets/img-prevencion.jpg" alt="Prevención del VPH">).
+
+No usar frameworks como Bootstrap, pero sí aprovechar CSS Grid o Flexbox.
+
+3. INTERACTIVIDAD Y ANIMACIONES
+Animaciones sutiles al hacer scroll: fade-in, slide-in, parallax ligero en fondo (si es posible).
+
+Pequeños efectos de hover en botones, íconos e imágenes (zoom suave o cambio de color).
+
+Un efecto especial opcional: que el fondo reaccione sutilmente al movimiento del cursor (parallax mouse effect), sin entorpecer la lectura ni hacer lento el sitio.
+
+Call to actions animados: botones que pulsan o destacan al hacer scroll.
+
+4. CÓDIGO Y ESTRUCTURA TÉCNICA
+Separar claramente HTML, CSS y JS (si se usa).
+
+Comentar en el código los bloques principales para su fácil edición posterior.
+
+Nombrar clases, ids y variables con nombres descriptivos como section-prevencion, cta-boton-vacunacion, etc.
