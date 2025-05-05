@@ -73,20 +73,20 @@ export default function InteractiveBackground({
         let lightness: number;
         
         if (colorFamily === 0) {
-          // Purple family - more vibrant
+          // Purple family - extremely vibrant
           hue = 273 + (Math.random() * 20 - 10);
-          saturation = 80 + (Math.random() * 20 - 10); // Higher saturation for vibrancy
-          lightness = 55 + (Math.random() * 10 - 5); // Slightly darker for more contrast
+          saturation = 95 + (Math.random() * 5); // Super high saturation for vibrant effect
+          lightness = 60 + (Math.random() * 8 - 4); // Brighter for more vibrant look
         } else if (colorFamily === 1) {
-          // Blue family - more vibrant
+          // Blue family - extremely vibrant
           hue = 220 + (Math.random() * 20 - 10);
-          saturation = 85 + (Math.random() * 15 - 7.5); // Higher saturation
-          lightness = 60 + (Math.random() * 10 - 5);
+          saturation = 100; // Maximum saturation for blues
+          lightness = 65 + (Math.random() * 8 - 4);
         } else {
-          // Pink family - more vibrant
-          hue = 330 + (Math.random() * 40 - 20); // Wider hue range for pinks
-          saturation = 90 + (Math.random() * 10 - 5);
-          lightness = 65 + (Math.random() * 15 - 7.5);
+          // Pink family - extremely vibrant
+          hue = 325 + (Math.random() * 30 - 15); // Focused on vibrant hot pink range
+          saturation = 100; // Maximum saturation for pinks
+          lightness = 70 + (Math.random() * 10 - 5); // Brighter pinks
         }
         
         const baseSpeed = 0.15 + Math.random() * 0.25;
@@ -115,10 +115,38 @@ export default function InteractiveBackground({
       const tinselPoints: GradientPoint[] = [];
       
       for (let i = 0; i < tinselCount; i++) {
-        // Choose color family for tinsel (more white/light tones)
-        let hue = Math.random() * 360; // Full hue range
-        let saturation = 70 + Math.random() * 30; // High saturation
-        let lightness = 75 + Math.random() * 20; // Bright
+        // Choose color family for tinsel (vibrant and bright)
+        // Mix of whites and vibrant colors to create a starry/tinsel effect
+        const isBright = Math.random() > 0.3; // 70% chance of being a bright white-ish dot
+        
+        let hue: number;
+        let saturation: number;
+        let lightness: number;
+        
+        if (isBright) {
+          // Bright white-ish tinsel (slightly tinted)
+          hue = Math.random() * 360;
+          saturation = 10 + Math.random() * 20; // Low saturation for white-ish look
+          lightness = 85 + Math.random() * 15; // Very bright
+        } else {
+          // Vibrant colored tinsel
+          // Use the same color families as the gradients for cohesiveness
+          const colorType = Math.floor(Math.random() * 3);
+          
+          if (colorType === 0) {
+            // Purple family
+            hue = 273 + (Math.random() * 20 - 10);
+          } else if (colorType === 1) {
+            // Blue family
+            hue = 220 + (Math.random() * 20 - 10);
+          } else {
+            // Pink family
+            hue = 325 + (Math.random() * 20 - 10);
+          }
+          
+          saturation = 100; // Full saturation for vibrant colors
+          lightness = 70 + Math.random() * 20; // Bright but not as bright as white tinsel
+        }
         
         // Randomize parallax factor for depth effect
         const parallaxFactor = 0.1 + Math.random() * 0.9;
@@ -161,9 +189,22 @@ export default function InteractiveBackground({
       } else {
         ctx.filter = 'none';
       }
-
-      // Process each point with physics
+      
+      // Draw background gradients with parallax effect
+      const scrollY = scrollYRef.current;
+      
+      // Process each gradient point with physics
+      // Each gradient point has its own parallax factor (0 = no movement, 1 = full scroll movement)
+      // By default, we'll assign random factors to create depth
       pointsRef.current.forEach(point => {
+        // Assign a parallax factor if not already set
+        if (point.parallaxFactor === undefined) {
+          point.parallaxFactor = 0.1 + Math.random() * 0.3; // Random subtle parallax
+        }
+        
+        // Apply parallax effect (more distant points move slower)
+        const parallaxOffset = scrollY * point.parallaxFactor * 0.1;
+        const displayY = point.y - parallaxOffset;
         // Apply physics effects based on scrolling
         if (isScrollingRef.current) {
           // Accelerate points based on scroll velocity
@@ -263,17 +304,84 @@ export default function InteractiveBackground({
         ctx.fill();
       });
       
+      // Draw the tinsel (tiny dots) with wind-like movement and parallax
+      tinselPointsRef.current.forEach(point => {
+        // Apply a stronger parallax effect for tinsel (these are closer to the viewer)
+        const parallaxOffset = scrollY * (point.parallaxFactor || 0.8) * 0.2;
+        const displayY = point.y - parallaxOffset;
+        
+        // Add wind physics - tinsel moves more like it's being blown by the wind
+        if (isScrollingRef.current) {
+          // When scrolling, add more wind force in scroll direction
+          const windForce = scrollVelocityRef.current * 0.01;
+          point.velocityX += (Math.random() - 0.5) * 0.2; // Random horizontal movement
+          point.velocityY += windForce + (Math.random() - 0.3) * 0.1; // Mostly downward wind with scroll
+          
+          // Increase speed with scrolling
+          point.speed = Math.min(point.baseSpeed * 2, point.speed * 1.05);
+        } else {
+          // Gentle random wind when not scrolling
+          point.velocityX += (Math.random() - 0.5) * 0.05;
+          point.velocityY += (Math.random() - 0.4) * 0.05; // Slight downward bias
+          
+          // Return to normal speed
+          point.speed = point.baseSpeed;
+        }
+        
+        // Apply velocity with damping to create smooth movement
+        point.velocityX *= 0.98;
+        point.velocityY *= 0.98;
+        
+        // Apply movement
+        point.x += point.velocityX;
+        point.y += point.velocityY;
+        
+        // Wrap around the canvas (tinsel doesn't bounce, it wraps)
+        if (point.x < 0) point.x = canvas.width;
+        if (point.x > canvas.width) point.x = 0;
+        if (point.y < 0) point.y = canvas.height;
+        if (point.y > canvas.height) point.y = 0;
+        
+        // Draw the tinsel point with a subtle glow
+        const size = point.size * (1 + point.glowIntensity * 0.5);
+        
+        // Create a small radial gradient for each tinsel point
+        const gradient = ctx.createRadialGradient(
+          point.x, displayY, 0,
+          point.x, displayY, size * 2
+        );
+        
+        gradient.addColorStop(0, `hsla(${point.hue}, ${point.saturation}%, ${point.lightness}%, ${point.opacity})`);
+        gradient.addColorStop(1, `hsla(${point.hue}, ${point.saturation}%, ${point.lightness}%, 0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(point.x, displayY, size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      
       animationRef.current = requestAnimationFrame(render);
     };
     
     // Event handlers
     const handleResize = () => {
+      const oldWidth = canvas.width;
+      const oldHeight = canvas.height;
+      
       resizeCanvas();
-      // Adjust existing points to fit new dimensions
+      
+      // Adjust existing gradient points to fit new dimensions
       pointsRef.current = pointsRef.current.map(point => ({
         ...point,
-        x: (point.x / canvas.width) * window.innerWidth,
-        y: (point.y / canvas.height) * window.innerHeight
+        x: (point.x / oldWidth) * canvas.width,
+        y: (point.y / oldHeight) * canvas.height
+      }));
+      
+      // Adjust tinsel points to fit new dimensions
+      tinselPointsRef.current = tinselPointsRef.current.map(point => ({
+        ...point,
+        x: (point.x / oldWidth) * canvas.width,
+        y: (point.y / oldHeight) * canvas.height
       }));
     };
     
@@ -299,6 +407,7 @@ export default function InteractiveBackground({
       const currentScrollY = window.scrollY;
       scrollVelocityRef.current = currentScrollY - lastScrollYRef.current;
       lastScrollYRef.current = currentScrollY;
+      scrollYRef.current = currentScrollY; // Update scroll position for parallax
       
       // Set scrolling state
       isScrollingRef.current = true;
