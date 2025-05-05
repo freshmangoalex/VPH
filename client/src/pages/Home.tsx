@@ -7,6 +7,7 @@ import Prevention from '@/components/Prevention';
 import CTASection from '@/components/CTASection';
 import Resources from '@/components/Resources';
 import Footer from '@/components/Footer';
+import InteractiveBackground from '@/components/InteractiveBackground';
 import { calculateScrollProgress } from '@/lib/utils';
 
 export default function Home() {
@@ -22,17 +23,23 @@ export default function Home() {
   }, []);
   
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-800">
-      <Header scrollProgress={scrollProgress} />
-      <main>
-        <Hero />
-        <AboutVPH />
-        <RiskFactors />
-        <Prevention />
-        <CTASection />
-        <Resources />
-      </main>
-      <Footer />
+    <div className="min-h-screen text-neutral-800 overflow-x-hidden">
+      {/* Interactive gradient background */}
+      <InteractiveBackground numPoints={6} sensitivity={0.02} />
+      
+      {/* Semi-transparent backdrop for text readability */}
+      <div className="relative min-h-screen z-10">
+        <Header scrollProgress={scrollProgress} />
+        <main>
+          <Hero />
+          <AboutVPH />
+          <RiskFactors />
+          <Prevention />
+          <CTASection />
+          <Resources />
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 }
