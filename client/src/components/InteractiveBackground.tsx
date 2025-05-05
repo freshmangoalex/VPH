@@ -40,8 +40,9 @@ export default function InteractiveBackground({
   const scrollVelocityRef = useRef(0);
   const scrollYRef = useRef(0);
   const tinselPointsRef = useRef<GradientPoint[]>([]);
+  const frameCountRef = useRef(0); // For performance optimization
   const pointCount = Math.max(5, numPoints);  // Ensure at least 5 points
-  const tinselCount = 150; // Number of tiny tinsel points
+  const tinselCount = 60; // Reduced number of tiny tinsel points for better performance
   
   // Setup canvas and points
   useEffect(() => {
@@ -304,62 +305,69 @@ export default function InteractiveBackground({
         ctx.fill();
       });
       
-      // Draw the tinsel (tiny dots) with wind-like movement and parallax
-      tinselPointsRef.current.forEach(point => {
-        // Apply a stronger parallax effect for tinsel (these are closer to the viewer)
-        const parallaxOffset = scrollY * (point.parallaxFactor || 0.8) * 0.2;
-        const displayY = point.y - parallaxOffset;
-        
-        // Add wind physics - tinsel moves more like it's being blown by the wind
-        if (isScrollingRef.current) {
-          // When scrolling, add more wind force in scroll direction
-          const windForce = scrollVelocityRef.current * 0.01;
-          point.velocityX += (Math.random() - 0.5) * 0.2; // Random horizontal movement
-          point.velocityY += windForce + (Math.random() - 0.3) * 0.1; // Mostly downward wind with scroll
+      // Only update tinsel every other frame for performance
+      if (frameCountRef.current % 2 === 0) {
+        // Draw the tinsel (tiny dots) with wind-like movement and parallax
+        tinselPointsRef.current.forEach(point => {
+          // Apply a stronger parallax effect for tinsel (these are closer to the viewer)
+          const parallaxOffset = scrollY * (point.parallaxFactor || 0.8) * 0.2;
+          const displayY = point.y - parallaxOffset;
           
-          // Increase speed with scrolling
-          point.speed = Math.min(point.baseSpeed * 2, point.speed * 1.05);
-        } else {
-          // Gentle random wind when not scrolling
-          point.velocityX += (Math.random() - 0.5) * 0.05;
-          point.velocityY += (Math.random() - 0.4) * 0.05; // Slight downward bias
+          // Add wind physics - tinsel moves more like it's being blown by the wind
+          if (isScrollingRef.current) {
+            // When scrolling, add more wind force in scroll direction
+            const windForce = scrollVelocityRef.current * 0.01;
+            point.velocityX += (Math.random() - 0.5) * 0.2; // Random horizontal movement
+            point.velocityY += windForce + (Math.random() - 0.3) * 0.1; // Mostly downward wind with scroll
+            
+            // Increase speed with scrolling
+            point.speed = Math.min(point.baseSpeed * 2, point.speed * 1.05);
+          } else {
+            // Gentle random wind when not scrolling
+            point.velocityX += (Math.random() - 0.5) * 0.05;
+            point.velocityY += (Math.random() - 0.4) * 0.05; // Slight downward bias
+            
+            // Return to normal speed
+            point.speed = point.baseSpeed;
+          }
           
-          // Return to normal speed
-          point.speed = point.baseSpeed;
-        }
-        
-        // Apply velocity with damping to create smooth movement
-        point.velocityX *= 0.98;
-        point.velocityY *= 0.98;
-        
-        // Apply movement
-        point.x += point.velocityX;
-        point.y += point.velocityY;
-        
-        // Wrap around the canvas (tinsel doesn't bounce, it wraps)
-        if (point.x < 0) point.x = canvas.width;
-        if (point.x > canvas.width) point.x = 0;
-        if (point.y < 0) point.y = canvas.height;
-        if (point.y > canvas.height) point.y = 0;
-        
-        // Draw the tinsel point with a subtle glow
-        const size = point.size * (1 + point.glowIntensity * 0.5);
-        
-        // Create a small radial gradient for each tinsel point
-        const gradient = ctx.createRadialGradient(
-          point.x, displayY, 0,
-          point.x, displayY, size * 2
-        );
-        
-        gradient.addColorStop(0, `hsla(${point.hue}, ${point.saturation}%, ${point.lightness}%, ${point.opacity})`);
-        gradient.addColorStop(1, `hsla(${point.hue}, ${point.saturation}%, ${point.lightness}%, 0)`);
-        
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(point.x, displayY, size, 0, Math.PI * 2);
-        ctx.fill();
-      });
+          // Apply velocity with damping to create smooth movement
+          point.velocityX *= 0.98;
+          point.velocityY *= 0.98;
+          
+          // Apply movement
+          point.x += point.velocityX;
+          point.y += point.velocityY;
+          
+          // Wrap around the canvas (tinsel doesn't bounce, it wraps)
+          if (point.x < 0) point.x = canvas.width;
+          if (point.x > canvas.width) point.x = 0;
+          if (point.y < 0) point.y = canvas.height;
+          if (point.y > canvas.height) point.y = 0;
+          
+          // Draw the tinsel point with a subtle glow
+          const size = point.size * (1 + point.glowIntensity * 0.5);
+          
+          // Create a small radial gradient for each tinsel point
+          const gradient = ctx.createRadialGradient(
+            point.x, displayY, 0,
+            point.x, displayY, size * 2
+          );
+          
+          gradient.addColorStop(0, `hsla(${point.hue}, ${point.saturation}%, ${point.lightness}%, ${point.opacity})`);
+          gradient.addColorStop(1, `hsla(${point.hue}, ${point.saturation}%, ${point.lightness}%, 0)`);
+          
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(point.x, displayY, size, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
       
+      // Increment frame counter
+      frameCountRef.current++;
+      
+      // Request next frame
       animationRef.current = requestAnimationFrame(render);
     };
     

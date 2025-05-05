@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --background: 273 75% 8%;
+  --background: 280 80% 37%;
   --foreground: 0 0% 100%;
   
   --muted: 60 4.8% 95.9%;
@@ -34,7 +34,7 @@
   --radius: 0.5rem;
 
   /* Custom colors */
-  --primary-light: 273 29% 62%;
+  --primary-light: 273 29% 43%;
   --primary-dark: 273 35% 34%;
   
   --secondary-light: 217 74% 70%;
