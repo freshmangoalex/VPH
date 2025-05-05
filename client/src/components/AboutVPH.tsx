@@ -9,44 +9,44 @@ const AboutVPH = () => {
   const infoRef = useScrollAnimation();
   
   return (
-    <section id="about-vph" className="py-16 bg-white">
+    <section id="about-vph" className="py-16 bg-transparent">
       <div className="container mx-auto px-4">
         <div ref={titleRef as React.RefObject<HTMLDivElement>} className="max-w-3xl mx-auto text-center mb-12 section-hidden">
           <h2 className="font-heading font-bold text-3xl md:text-4xl text-primary mb-4">¿Qué es el VPH?</h2>
-          <p className="text-neutral-600">Información clara y objetiva sobre el Virus del Papiloma Humano</p>
+          <p className="text-white">Información clara y objetiva sobre el Virus del Papiloma Humano</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <div ref={cardRef1 as React.RefObject<HTMLDivElement>} className="bg-neutral-100 rounded-xl p-6 shadow-md section-hidden">
+          <div ref={cardRef1 as React.RefObject<HTMLDivElement>} className="bg-white/20 backdrop-blur-sm rounded-xl p-6 shadow-md section-hidden">
             <div className="text-primary text-4xl mb-4">
               <i className="fas fa-virus"></i>
             </div>
             <h3 className="font-heading font-semibold text-xl mb-3">Infección</h3>
-            <p className="text-neutral-700">El VPH se transmite por contacto directo durante relaciones sexuales. La mayoría de personas sexualmente activas contraerán al menos un tipo de VPH en su vida.</p>
+            <p className="text-white">El VPH se transmite por contacto directo durante relaciones sexuales. La mayoría de personas sexualmente activas contraerán al menos un tipo de VPH en su vida.</p>
           </div>
 
-          <div ref={cardRef2 as React.RefObject<HTMLDivElement>} className="bg-neutral-100 rounded-xl p-6 shadow-md section-hidden">
+          <div ref={cardRef2 as React.RefObject<HTMLDivElement>} className="bg-white/20 backdrop-blur-sm rounded-xl p-6 shadow-md section-hidden">
             <div className="text-primary text-4xl mb-4">
               <i className="fas fa-hourglass-half"></i>
             </div>
             <h3 className="font-heading font-semibold text-xl mb-3">Persistencia</h3>
-            <p className="text-neutral-700">Aunque la mayoría de infecciones se resuelven solas, algunas persisten. La persistencia del virus es un factor clave para el desarrollo de lesiones precancerosas.</p>
+            <p className="text-white">Aunque la mayoría de infecciones se resuelven solas, algunas persisten. La persistencia del virus es un factor clave para el desarrollo de lesiones precancerosas.</p>
           </div>
 
-          <div ref={cardRef3 as React.RefObject<HTMLDivElement>} className="bg-neutral-100 rounded-xl p-6 shadow-md section-hidden">
+          <div ref={cardRef3 as React.RefObject<HTMLDivElement>} className="bg-white/20 backdrop-blur-sm rounded-xl p-6 shadow-md section-hidden">
             <div className="text-primary text-4xl mb-4">
               <i className="fas fa-cell"></i>
             </div>
             <h3 className="font-heading font-semibold text-xl mb-3">Lesión</h3>
-            <p className="text-neutral-700">Con el tiempo, la infección persistente puede causar cambios celulares anormales, conocidos como lesiones precancerosas, que pueden detectarse mediante pruebas como el Papanicolaou.</p>
+            <p className="text-white">Con el tiempo, la infección persistente puede causar cambios celulares anormales, conocidos como lesiones precancerosas, que pueden detectarse mediante pruebas como el Papanicolaou.</p>
           </div>
 
-          <div ref={cardRef4 as React.RefObject<HTMLDivElement>} className="bg-neutral-100 rounded-xl p-6 shadow-md section-hidden">
+          <div ref={cardRef4 as React.RefObject<HTMLDivElement>} className="bg-white/20 backdrop-blur-sm rounded-xl p-6 shadow-md section-hidden">
             <div className="text-primary text-4xl mb-4">
               <i className="fas fa-disease"></i>
             </div>
             <h3 className="font-heading font-semibold text-xl mb-3">Cáncer</h3>
-            <p className="text-neutral-700">Sin detección o tratamiento, las lesiones precancerosas pueden progresar a cáncer, principalmente cervicouterino, aunque también puede afectar otras zonas.</p>
+            <p className="text-white">Sin detección o tratamiento, las lesiones precancerosas pueden progresar a cáncer, principalmente cervicouterino, aunque también puede afectar otras zonas.</p>
           </div>
         </div>
 
