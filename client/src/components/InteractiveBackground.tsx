@@ -8,7 +8,12 @@ interface GradientPoint {
   lightness: number;
   size: number;
   speed: number;
+  baseSpeed: number; // Store original speed for acceleration/deceleration
   direction: number;
+  velocityX: number; // For physics simulation
+  velocityY: number; // For physics simulation
+  opacity: number; // To control individual opacity
+  glowIntensity: number; // For glow effects
 }
 
 interface InteractiveBackgroundProps {
@@ -28,6 +33,9 @@ export default function InteractiveBackground({
   const animationRef = useRef<number>();
   const inactiveTimerRef = useRef<number>();
   const isActiveRef = useRef(false);
+  const isScrollingRef = useRef(false);
+  const lastScrollYRef = useRef(0);
+  const scrollVelocityRef = useRef(0);
   const pointCount = Math.max(5, numPoints);  // Ensure at least 5 points
   
   // Setup canvas and points
@@ -60,22 +68,23 @@ export default function InteractiveBackground({
         let lightness: number;
         
         if (colorFamily === 0) {
-          // Purple family
-          hue = 273 + (Math.random() * 15 - 7.5);
-          saturation = 29 + (Math.random() * 10 - 5);
-          lightness = 46 + (Math.random() * 10 - 5);
+          // Purple family - more vibrant
+          hue = 273 + (Math.random() * 20 - 10);
+          saturation = 80 + (Math.random() * 20 - 10); // Higher saturation for vibrancy
+          lightness = 55 + (Math.random() * 10 - 5); // Slightly darker for more contrast
         } else if (colorFamily === 1) {
-          // Blue family
-          hue = 217 + (Math.random() * 15 - 7.5);
-          saturation = 74 + (Math.random() * 10 - 5);
-          lightness = 59 + (Math.random() * 10 - 5);
+          // Blue family - more vibrant
+          hue = 220 + (Math.random() * 20 - 10);
+          saturation = 85 + (Math.random() * 15 - 7.5); // Higher saturation
+          lightness = 60 + (Math.random() * 10 - 5);
         } else {
-          // Pink family
-          hue = 350 + (Math.random() * 15 - 7.5);
+          // Pink family - more vibrant
+          hue = 330 + (Math.random() * 40 - 20); // Wider hue range for pinks
           saturation = 90 + (Math.random() * 10 - 5);
-          lightness = 71 + (Math.random() * 10 - 5);
+          lightness = 65 + (Math.random() * 15 - 7.5);
         }
         
+        const baseSpeed = 0.15 + Math.random() * 0.25;
         points.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
@@ -83,8 +92,13 @@ export default function InteractiveBackground({
           saturation,
           lightness,
           size: 150 + Math.random() * 300, // Larger size for more coverage
-          speed: 0.15 + Math.random() * 0.25, // Slightly slower for smoother movement
-          direction: Math.random() * Math.PI * 2
+          speed: baseSpeed, // Current speed
+          baseSpeed, // Original speed to return to after acceleration
+          direction: Math.random() * Math.PI * 2,
+          velocityX: 0, // Initial velocity for physics
+          velocityY: 0, // Initial velocity for physics
+          opacity: 0.3 + Math.random() * 0.2, // Randomize opacity for more depth
+          glowIntensity: Math.random() * 0.5 // Random glow intensity
         });
       }
       
@@ -99,61 +113,111 @@ export default function InteractiveBackground({
       
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Process each point
+      // Add blur effect when scrolling for a dreamy look
+      if (isScrollingRef.current) {
+        ctx.filter = 'blur(1px)';
+      } else {
+        ctx.filter = 'none';
+      }
+
+      // Process each point with physics
       pointsRef.current.forEach(point => {
-        // Move points in a floating manner
-        point.x += Math.cos(point.direction) * point.speed;
-        point.y += Math.sin(point.direction) * point.speed;
-        
-        // Bounce off walls
-        if (point.x < 0 || point.x > canvas.width) {
-          point.direction = Math.PI - point.direction;
+        // Apply physics effects based on scrolling
+        if (isScrollingRef.current) {
+          // Accelerate points based on scroll velocity
+          const scrollAcceleration = Math.abs(scrollVelocityRef.current) * 0.01;
+          const acceleratedSpeed = point.baseSpeed * (1 + scrollAcceleration);
+          point.speed = Math.min(acceleratedSpeed, point.baseSpeed * 3); // Cap the max speed
+          
+          // Add some velocity influenced by scroll direction
+          point.velocityY += scrollVelocityRef.current * 0.005;
+          
+          // Increase glow intensity during scrolling
+          point.glowIntensity = Math.min(1.0, point.glowIntensity + 0.05);
+        } else {
+          // Gradually return to base speed when not scrolling
+          if (point.speed > point.baseSpeed) {
+            point.speed = Math.max(point.baseSpeed, point.speed * 0.95);
+          }
+          
+          // Dampen velocity when not scrolling
+          point.velocityX *= 0.95;
+          point.velocityY *= 0.95;
+          
+          // Reduce glow intensity
+          point.glowIntensity = Math.max(0.2, point.glowIntensity * 0.95);
         }
-        if (point.y < 0 || point.y > canvas.height) {
-          point.direction = -point.direction;
-        }
         
-        // Constrain to canvas
-        point.x = Math.max(0, Math.min(canvas.width, point.x));
-        point.y = Math.max(0, Math.min(canvas.height, point.y));
-        
-        // If mouse is active, have points gently move toward mouse
+        // Add mouse interaction physics
         if (isActiveRef.current) {
           const dx = mousePositionRef.current.x - point.x;
           const dy = mousePositionRef.current.y - point.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           
           if (distance < 400) {
-            point.x += (dx / distance) * sensitivity * 5;
-            point.y += (dy / distance) * sensitivity * 5;
+            // Apply attraction force
+            const force = (400 - distance) / 400 * sensitivity * 2;
+            point.velocityX += (dx / distance) * force;
+            point.velocityY += (dy / distance) * force;
             
-            // Increase color brightness near mouse
-            point.lightness = Math.min(85, point.lightness + 0.1);
+            // Increase color brightness and glow near mouse
+            point.lightness = Math.min(90, point.lightness + 0.3);
+            point.glowIntensity = Math.min(1.5, point.glowIntensity + 0.1);
+            point.opacity = Math.min(0.8, point.opacity + 0.01);
           } else {
-            // Restore original lightness over time
-            if (point.lightness > 71) {
-              point.lightness -= 0.05;
+            // Restore original properties over time
+            if (point.lightness > 65) {
+              point.lightness -= 0.1;
+            }
+            if (point.opacity > 0.3) {
+              point.opacity -= 0.01;
             }
           }
         } else {
-          // Restore original lightness when inactive
-          if (point.lightness > 71) {
-            point.lightness -= 0.02;
+          // Restore original properties when inactive
+          if (point.lightness > 65) {
+            point.lightness -= 0.05;
+          }
+          if (point.opacity > 0.3) {
+            point.opacity -= 0.005;
           }
         }
         
-        // Draw the gradient for this point
+        // Apply physics-based movement
+        point.x += Math.cos(point.direction) * point.speed + point.velocityX;
+        point.y += Math.sin(point.direction) * point.speed + point.velocityY;
+        
+        // Bounce off walls with physics
+        if (point.x < 0 || point.x > canvas.width) {
+          point.direction = Math.PI - point.direction;
+          point.velocityX *= -0.5; // Dampen horizontal velocity on bounce
+          point.velocityY *= 0.9; // Reduce vertical velocity slightly
+        }
+        if (point.y < 0 || point.y > canvas.height) {
+          point.direction = -point.direction;
+          point.velocityY *= -0.5; // Dampen vertical velocity on bounce
+          point.velocityX *= 0.9; // Reduce horizontal velocity slightly
+        }
+        
+        // Constrain to canvas
+        point.x = Math.max(0, Math.min(canvas.width, point.x));
+        point.y = Math.max(0, Math.min(canvas.height, point.y));
+        
+        // Draw the gradient with enhanced glow effect
         const gradient = ctx.createRadialGradient(
           point.x, point.y, 0,
-          point.x, point.y, point.size
+          point.x, point.y, point.size + (point.glowIntensity * 50) // Size increases with glow intensity
         );
         
-        gradient.addColorStop(0, `hsla(${point.hue}, ${point.saturation}%, ${point.lightness}%, 0.3)`);
+        // Add more color stops for better glow effect
+        gradient.addColorStop(0, `hsla(${point.hue}, ${point.saturation}%, ${point.lightness}%, ${point.opacity + 0.2})`);
+        gradient.addColorStop(0.3, `hsla(${point.hue}, ${point.saturation}%, ${point.lightness}%, ${point.opacity})`);
+        gradient.addColorStop(0.7, `hsla(${point.hue}, ${point.saturation}%, ${Math.max(30, point.lightness - 10)}%, ${point.opacity * 0.5})`);
         gradient.addColorStop(1, `hsla(${point.hue}, ${point.saturation}%, ${point.lightness}%, 0)`);
         
         ctx.fillStyle = gradient;
         ctx.beginPath();
-        ctx.arc(point.x, point.y, point.size, 0, Math.PI * 2);
+        ctx.arc(point.x, point.y, point.size + (point.glowIntensity * 50), 0, Math.PI * 2);
         ctx.fill();
       });
       
@@ -188,11 +252,32 @@ export default function InteractiveBackground({
       handleUserActivity();
     };
     
+    const handleScroll = () => {
+      // Calculate scroll velocity
+      const currentScrollY = window.scrollY;
+      scrollVelocityRef.current = currentScrollY - lastScrollYRef.current;
+      lastScrollYRef.current = currentScrollY;
+      
+      // Set scrolling state
+      isScrollingRef.current = true;
+      handleUserActivity();
+      
+      // Reset scrolling state after a short delay
+      if (inactiveTimerRef.current !== undefined) {
+        window.clearTimeout(inactiveTimerRef.current);
+      }
+      
+      inactiveTimerRef.current = window.setTimeout(() => {
+        isScrollingRef.current = false;
+        scrollVelocityRef.current = 0;
+      }, 100) as unknown as number;
+    };
+    
     // Start animation and add event listeners
     animationRef.current = requestAnimationFrame(render);
     window.addEventListener('resize', handleResize);
     window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('scroll', handleUserActivity);
+    window.addEventListener('scroll', handleScroll);
     
     // Cleanup
     return () => {
@@ -204,7 +289,7 @@ export default function InteractiveBackground({
       }
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('scroll', handleUserActivity);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, [numPoints, sensitivity]);
   
