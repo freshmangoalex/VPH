@@ -23,31 +23,36 @@ export default function InteractiveBackground({
   className = ''
 }: InteractiveBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [points, setPoints] = useState<GradientPoint[]>([]);
+  const mousePositionRef = useRef<{x: number, y: number}>({ x: 0, y: 0 });
+  const pointsRef = useRef<GradientPoint[]>([]);
   const animationRef = useRef<number>();
-  const inactiveTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [isActive, setIsActive] = useState(false);
+  const inactiveTimerRef = useRef<number>();
+  const isActiveRef = useRef(false);
+  const pointCount = Math.max(5, numPoints);  // Ensure at least 5 points
   
-  // Setup canvas and create initial points
+  // Setup canvas and points
   useEffect(() => {
-    const setupCanvas = () => {
-      if (!canvasRef.current) return;
+    if (!canvasRef.current) return;
+    
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    // Set canvas size
+    const resizeCanvas = () => {
+      if (!canvas) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    
+    resizeCanvas();
+    
+    // Create initial points
+    const createPoints = () => {
+      const points: GradientPoint[] = [];
       
-      const canvas = canvasRef.current;
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      
-      setDimensions({ width, height });
-      canvas.width = width;
-      canvas.height = height;
-      
-      // Create initial gradient points
-      const initialPoints: GradientPoint[] = [];
-      
-      for (let i = 0; i < numPoints; i++) {
-        // Choose one of the three color families (Purple, Blue, or Pink)
+      for (let i = 0; i < pointCount; i++) {
+        // Choose color family (Purple, Blue, or Pink)
         const colorFamily = Math.floor(Math.random() * 3);
         
         let hue: number;
@@ -71,89 +76,31 @@ export default function InteractiveBackground({
           lightness = 71 + (Math.random() * 10 - 5);
         }
         
-        initialPoints.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
+        points.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
           hue,
           saturation,
           lightness,
-          size: 100 + Math.random() * 200,
-          speed: 0.2 + Math.random() * 0.3,
+          size: 150 + Math.random() * 300, // Larger size for more coverage
+          speed: 0.15 + Math.random() * 0.25, // Slightly slower for smoother movement
           direction: Math.random() * Math.PI * 2
         });
       }
       
-      setPoints(initialPoints);
+      pointsRef.current = points;
     };
     
-    setupCanvas();
+    createPoints();
     
-    // Handle window resize
-    const handleResize = () => {
-      if (!canvasRef.current) return;
-      
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      
-      setDimensions({ width, height });
-      canvasRef.current.width = width;
-      canvasRef.current.height = height;
-    };
-    
-    window.addEventListener('resize', handleResize);
-    
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [numPoints]);
-  
-  // Handle mouse movement and user activity
-  useEffect(() => {
-    const handleUserActivity = () => {
-      setIsActive(true);
-      
-      if (inactiveTimerRef.current) {
-        clearTimeout(inactiveTimerRef.current);
-      }
-      
-      inactiveTimerRef.current = setTimeout(() => {
-        setIsActive(false);
-      }, 2000);
-    };
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-      handleUserActivity();
-    };
-    
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('scroll', handleUserActivity);
-    
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('scroll', handleUserActivity);
-      
-      if (inactiveTimerRef.current) {
-        clearTimeout(inactiveTimerRef.current);
-      }
-    };
-  }, []);
-  
-  // Animation loop
-  useEffect(() => {
-    if (!canvasRef.current || points.length === 0) return;
-    
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    
-    const updatedPoints = [...points];
-    
+    // Main animation function
     const render = () => {
+      if (!canvas || !ctx) return;
+      
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Update and draw each point
-      updatedPoints.forEach((point, index) => {
+      // Process each point
+      pointsRef.current.forEach(point => {
         // Move points in a floating manner
         point.x += Math.cos(point.direction) * point.speed;
         point.y += Math.sin(point.direction) * point.speed;
@@ -171,9 +118,9 @@ export default function InteractiveBackground({
         point.y = Math.max(0, Math.min(canvas.height, point.y));
         
         // If mouse is active, have points gently move toward mouse
-        if (isActive) {
-          const dx = mousePosition.x - point.x;
-          const dy = mousePosition.y - point.y;
+        if (isActiveRef.current) {
+          const dx = mousePositionRef.current.x - point.x;
+          const dy = mousePositionRef.current.y - point.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           
           if (distance < 400) {
@@ -208,22 +155,58 @@ export default function InteractiveBackground({
         ctx.beginPath();
         ctx.arc(point.x, point.y, point.size, 0, Math.PI * 2);
         ctx.fill();
-        
-        // Update the point in our array
-        updatedPoints[index] = point;
       });
       
       animationRef.current = requestAnimationFrame(render);
     };
     
-    animationRef.current = requestAnimationFrame(render);
+    // Event handlers
+    const handleResize = () => {
+      resizeCanvas();
+      // Adjust existing points to fit new dimensions
+      pointsRef.current = pointsRef.current.map(point => ({
+        ...point,
+        x: (point.x / canvas.width) * window.innerWidth,
+        y: (point.y / canvas.height) * window.innerHeight
+      }));
+    };
     
+    const handleUserActivity = () => {
+      isActiveRef.current = true;
+      
+      if (inactiveTimerRef.current !== undefined) {
+        window.clearTimeout(inactiveTimerRef.current);
+      }
+      
+      inactiveTimerRef.current = window.setTimeout(() => {
+        isActiveRef.current = false;
+      }, 2000) as unknown as number;
+    };
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      mousePositionRef.current = { x: e.clientX, y: e.clientY };
+      handleUserActivity();
+    };
+    
+    // Start animation and add event listeners
+    animationRef.current = requestAnimationFrame(render);
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('scroll', handleUserActivity);
+    
+    // Cleanup
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
+      if (inactiveTimerRef.current !== undefined) {
+        window.clearTimeout(inactiveTimerRef.current);
+      }
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleUserActivity);
     };
-  }, [points, isActive, mousePosition, sensitivity]);
+  }, [numPoints, sensitivity]);
   
   return (
     <canvas

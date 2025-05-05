@@ -25,7 +25,7 @@ export default function Home() {
   return (
     <div className="min-h-screen text-neutral-800 overflow-x-hidden">
       {/* Interactive gradient background */}
-      <InteractiveBackground numPoints={6} sensitivity={0.02} />
+      <InteractiveBackground numPoints={8} sensitivity={0.025} />
       
       {/* Semi-transparent backdrop for text readability */}
       <div className="relative min-h-screen z-10">
