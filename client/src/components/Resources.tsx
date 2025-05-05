@@ -13,12 +13,12 @@ const Resources = () => {
         </div>
 
         <div ref={resourcesRef as React.RefObject<HTMLDivElement>} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 section-hidden">
-          <div className="bg-neutral-50 rounded-xl p-6 shadow-md hover-grow">
+          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 shadow-md hover-grow">
             <div className="text-primary text-3xl mb-4">
               <i className="fas fa-hospital"></i>
             </div>
-            <h3 className="font-heading font-semibold text-xl mb-3">Centros de salud</h3>
-            <p className="text-neutral-700 mb-4">Encuentra los centros de salud de la Secretaría de Salud donde puedes recibir atención.</p>
+            <h3 className="font-heading font-semibold text-xl mb-3 text-white">Centros de salud</h3>
+            <p className="text-white mb-4">Encuentra los centros de salud de la Secretaría de Salud donde puedes recibir atención.</p>
             <a href="#" className="text-secondary font-medium hover:text-secondary-dark transition-colors">Buscar centro cercano <i className="fas fa-arrow-right ml-1"></i></a>
           </div>
 
