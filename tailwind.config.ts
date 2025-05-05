@@ -79,6 +79,18 @@ export default {
             height: "0",
           },
         },
+        "glow-pulse-purple": {
+          "0%, 100%": { boxShadow: "0 0 20px rgba(147, 51, 234, 0.7)" },
+          "50%": { boxShadow: "0 0 40px rgba(147, 51, 234, 0.9)" },
+        },
+        "glow-pulse-pink": {
+          "0%, 100%": { boxShadow: "0 0 20px rgba(236, 72, 153, 0.7)" },
+          "50%": { boxShadow: "0 0 40px rgba(236, 72, 153, 0.9)" },
+        },
+        "glow-pulse-blue": {
+          "0%, 100%": { boxShadow: "0 0 20px rgba(37, 99, 235, 0.7)" },
+          "50%": { boxShadow: "0 0 40px rgba(37, 99, 235, 0.9)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",

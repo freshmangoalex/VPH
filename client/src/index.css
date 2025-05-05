@@ -3,17 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
+  --background: 273 75% 8%;
+  --foreground: 0 0% 100%;
   
   --muted: 60 4.8% 95.9%;
   --muted-foreground: 25 5.3% 44.7%;
   
-  --popover: 0 0% 100%;
-  --popover-foreground: 20 14.3% 4.1%;
+  --popover: 273 70% 12%;
+  --popover-foreground: 0 0% 100%;
   
-  --card: 0 0% 100%;
-  --card-foreground: 20 14.3% 4.1%;
+  --card: 273 70% 12%;
+  --card-foreground: 0 0% 100%;
   
   --border: 20 5.9% 90%;
   --input: 20 5.9% 90%;

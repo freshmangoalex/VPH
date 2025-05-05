@@ -14,6 +14,8 @@ interface GradientPoint {
   velocityY: number; // For physics simulation
   opacity: number; // To control individual opacity
   glowIntensity: number; // For glow effects
+  parallaxFactor?: number; // For parallax effect (how much this point moves with scroll)
+  isTinsel?: boolean; // Whether this is a tiny tinsel dot
 }
 
 interface InteractiveBackgroundProps {
@@ -36,7 +38,10 @@ export default function InteractiveBackground({
   const isScrollingRef = useRef(false);
   const lastScrollYRef = useRef(0);
   const scrollVelocityRef = useRef(0);
+  const scrollYRef = useRef(0);
+  const tinselPointsRef = useRef<GradientPoint[]>([]);
   const pointCount = Math.max(5, numPoints);  // Ensure at least 5 points
+  const tinselCount = 150; // Number of tiny tinsel points
   
   // Setup canvas and points
   useEffect(() => {
@@ -105,7 +110,44 @@ export default function InteractiveBackground({
       pointsRef.current = points;
     };
     
+    // Create tinsel points - the small floating dots
+    const createTinselPoints = () => {
+      const tinselPoints: GradientPoint[] = [];
+      
+      for (let i = 0; i < tinselCount; i++) {
+        // Choose color family for tinsel (more white/light tones)
+        let hue = Math.random() * 360; // Full hue range
+        let saturation = 70 + Math.random() * 30; // High saturation
+        let lightness = 75 + Math.random() * 20; // Bright
+        
+        // Randomize parallax factor for depth effect
+        const parallaxFactor = 0.1 + Math.random() * 0.9;
+        const baseSpeed = 0.3 + Math.random() * 0.6; // Tinsel moves faster than gradients
+        
+        tinselPoints.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          hue,
+          saturation,
+          lightness,
+          size: 1 + Math.random() * 3, // Tiny dots
+          speed: baseSpeed,
+          baseSpeed,
+          direction: Math.random() * Math.PI * 2,
+          velocityX: 0,
+          velocityY: 0,
+          opacity: 0.2 + Math.random() * 0.6,
+          glowIntensity: 0.1 + Math.random() * 0.2,
+          parallaxFactor,
+          isTinsel: true
+        });
+      }
+      
+      tinselPointsRef.current = tinselPoints;
+    };
+    
     createPoints();
+    createTinselPoints();
     
     // Main animation function
     const render = () => {
