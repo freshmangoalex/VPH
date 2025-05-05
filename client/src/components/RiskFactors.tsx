@@ -7,11 +7,11 @@ const RiskFactors = () => {
   const infoRef = useScrollAnimation();
   
   return (
-    <section id="risk-factors" className="py-16 bg-neutral-100">
+    <section id="risk-factors" className="py-16 bg-transparent">
       <div className="container mx-auto px-4">
         <div ref={titleRef as React.RefObject<HTMLDivElement>} className="max-w-3xl mx-auto text-center mb-12 section-hidden">
           <h2 className="font-heading font-bold text-3xl md:text-4xl text-primary mb-4">Factores de Riesgo</h2>
-          <p className="text-neutral-600">Conoce los factores que pueden aumentar el riesgo de infección persistente por VPH</p>
+          <p className="text-white">Conoce los factores que pueden aumentar el riesgo de infección persistente por VPH</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

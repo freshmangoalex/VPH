@@ -50,11 +50,11 @@ const Prevention = () => {
         {/* Tab Content Panels */}
         <div ref={contentRef as React.RefObject<HTMLDivElement>} className="max-w-4xl mx-auto section-hidden">
           {/* Primary Prevention Panel */}
-          <div className={`bg-neutral-50 rounded-xl p-6 md:p-8 ${activeTab === 'primary' ? '' : 'hidden'}`}>
+          <div className={`bg-white/20 backdrop-blur-sm rounded-xl p-6 md:p-8 ${activeTab === 'primary' ? '' : 'hidden'}`}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <h3 className="font-heading font-semibold text-xl text-primary mb-4">Vacunación</h3>
-                <p className="text-neutral-700 mb-4">La vacuna contra el VPH es altamente efectiva para prevenir la infección por los tipos de VPH más comúnmente asociados con el cáncer.</p>
+                <p className="text-white mb-4">La vacuna contra el VPH es altamente efectiva para prevenir la infección por los tipos de VPH más comúnmente asociados con el cáncer.</p>
                 
                 <div className="bg-white rounded-lg p-4 mb-4 shadow-sm">
                   <h4 className="font-heading font-medium text-primary mb-2">Esquema de vacunación en México:</h4>
@@ -81,7 +81,7 @@ const Prevention = () => {
               
               <div>
                 <h3 className="font-heading font-semibold text-xl text-primary mb-4">Educación sexual integral</h3>
-                <p className="text-neutral-700 mb-4">El conocimiento sobre el VPH y las prácticas sexuales más seguras es fundamental para la prevención.</p>
+                <p className="text-white mb-4">El conocimiento sobre el VPH y las prácticas sexuales más seguras es fundamental para la prevención.</p>
                 
                 <ul className="space-y-3 text-neutral-700 mb-6">
                   <li className="flex items-start">
@@ -111,11 +111,11 @@ const Prevention = () => {
           </div>
 
           {/* Secondary Prevention Panel */}
-          <div className={`bg-neutral-50 rounded-xl p-6 md:p-8 ${activeTab === 'secondary' ? '' : 'hidden'}`}>
+          <div className={`bg-white/20 backdrop-blur-sm rounded-xl p-6 md:p-8 ${activeTab === 'secondary' ? '' : 'hidden'}`}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <h3 className="font-heading font-semibold text-xl text-primary mb-4">Prueba de Papanicolaou</h3>
-                <p className="text-neutral-700 mb-4">El Papanicolaou es una prueba que detecta cambios precancerosos en las células del cuello uterino antes de que se conviertan en cáncer.</p>
+                <p className="text-white mb-4">El Papanicolaou es una prueba que detecta cambios precancerosos en las células del cuello uterino antes de que se conviertan en cáncer.</p>
                 
                 <div className="bg-white rounded-lg p-4 mb-4 shadow-sm">
                   <h4 className="font-heading font-medium text-primary mb-2">Recomendaciones:</h4>
@@ -142,7 +142,7 @@ const Prevention = () => {
               
               <div>
                 <h3 className="font-heading font-semibold text-xl text-primary mb-4">Prueba de VPH</h3>
-                <p className="text-neutral-700 mb-4">La prueba de VPH detecta la presencia del virus directamente, identificando los tipos de alto riesgo antes de que causen cambios celulares.</p>
+                <p className="text-white mb-4">La prueba de VPH detecta la presencia del virus directamente, identificando los tipos de alto riesgo antes de que causen cambios celulares.</p>
                 
                 <ul className="space-y-3 text-neutral-700 mb-6">
                   <li className="flex items-start">
@@ -172,9 +172,9 @@ const Prevention = () => {
           </div>
 
           {/* Tertiary Prevention Panel */}
-          <div className={`bg-neutral-50 rounded-xl p-6 md:p-8 ${activeTab === 'tertiary' ? '' : 'hidden'}`}>
+          <div className={`bg-white/20 backdrop-blur-sm rounded-xl p-6 md:p-8 ${activeTab === 'tertiary' ? '' : 'hidden'}`}>
             <h3 className="font-heading font-semibold text-xl text-primary mb-4">Tratamiento de lesiones precancerosas</h3>
-            <p className="text-neutral-700 mb-6">Cuando se detectan lesiones precancerosas, existen varios tratamientos disponibles para prevenir su progresión a cáncer.</p>
+            <p className="text-white mb-6">Cuando se detectan lesiones precancerosas, existen varios tratamientos disponibles para prevenir su progresión a cáncer.</p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="bg-white rounded-lg p-4 shadow-sm">
@@ -214,10 +214,10 @@ const Prevention = () => {
               </div>
             </div>
             
-            <div className="bg-primary-light/10 rounded-lg p-4 mb-6">
+            <div className="bg-white/30 backdrop-blur-sm rounded-lg p-4 mb-6">
               <div className="flex items-start">
                 <i className="fas fa-info-circle text-primary text-xl mt-1 mr-3"></i>
-                <p className="text-neutral-700">El seguimiento después del tratamiento es fundamental. La mayoría de los tratamientos tienen una tasa de éxito superior al 90% y permiten conservar la fertilidad en mujeres que desean tener hijos en el futuro.</p>
+                <p className="text-white">El seguimiento después del tratamiento es fundamental. La mayoría de los tratamientos tienen una tasa de éxito superior al 90% y permiten conservar la fertilidad en mujeres que desean tener hijos en el futuro.</p>
               </div>
             </div>
             
