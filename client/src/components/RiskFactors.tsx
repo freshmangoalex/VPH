@@ -16,14 +16,14 @@ const RiskFactors = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div ref={cardRef1 as React.RefObject<HTMLDivElement>} className="section-hidden">
-            <div className="bg-white rounded-xl overflow-hidden shadow-md hover-grow h-full">
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl overflow-hidden shadow-md hover-grow h-full">
               <div className="bg-neutral-200 w-full h-48 flex items-center justify-center">
                 <i className="fas fa-image text-5xl text-neutral-400"></i>
                 <span className="sr-only">Imagen sobre factores de riesgo</span>
               </div>
               <div className="p-6">
                 <h3 className="font-heading font-semibold text-xl text-primary mb-4">Comportamientos</h3>
-                <ul className="space-y-3 text-neutral-700">
+                <ul className="space-y-3 text-white">
                   <li className="flex items-start">
                     <i className="fas fa-circle text-xs text-primary mt-1.5 mr-3"></i>
                     <span>Inicio temprano de la actividad sexual</span>
@@ -50,14 +50,14 @@ const RiskFactors = () => {
           </div>
 
           <div ref={cardRef2 as React.RefObject<HTMLDivElement>} className="section-hidden">
-            <div className="bg-white rounded-xl overflow-hidden shadow-md hover-grow h-full">
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl overflow-hidden shadow-md hover-grow h-full">
               <div className="bg-neutral-200 w-full h-48 flex items-center justify-center">
                 <i className="fas fa-image text-5xl text-neutral-400"></i>
                 <span className="sr-only">Imagen sobre factores de salud</span>
               </div>
               <div className="p-6">
                 <h3 className="font-heading font-semibold text-xl text-primary mb-4">Factores biológicos y de salud</h3>
-                <ul className="space-y-3 text-neutral-700">
+                <ul className="space-y-3 text-white">
                   <li className="flex items-start">
                     <i className="fas fa-circle text-xs text-primary mt-1.5 mr-3"></i>
                     <span>Sistema inmunológico debilitado (por ejemplo, personas con VIH)</span>
@@ -84,14 +84,14 @@ const RiskFactors = () => {
           </div>
         </div>
 
-        <div ref={infoRef as React.RefObject<HTMLDivElement>} className="mt-12 bg-secondary-light/10 rounded-xl p-6 section-hidden">
+        <div ref={infoRef as React.RefObject<HTMLDivElement>} className="mt-12 bg-white/30 backdrop-blur-sm rounded-xl p-6 section-hidden">
           <div className="flex flex-col md:flex-row items-center gap-6">
             <div className="text-secondary text-5xl">
               <i className="fas fa-info-circle"></i>
             </div>
             <div>
               <h4 className="font-heading font-semibold text-lg text-secondary mb-2">Importante recordar</h4>
-              <p className="text-neutral-700">El VPH es extremadamente común y puede afectar a cualquier persona sexualmente activa, independientemente de su género o orientación sexual. La presencia de factores de riesgo no garantiza una infección, y su ausencia tampoco la descarta por completo. Lo más importante es tomar medidas preventivas y realizar pruebas de detección periódicas.</p>
+              <p className="text-white">El VPH es extremadamente común y puede afectar a cualquier persona sexualmente activa, independientemente de su género o orientación sexual. La presencia de factores de riesgo no garantiza una infección, y su ausencia tampoco la descarta por completo. Lo más importante es tomar medidas preventivas y realizar pruebas de detección periódicas.</p>
             </div>
           </div>
         </div>

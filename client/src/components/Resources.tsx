@@ -5,11 +5,11 @@ const Resources = () => {
   const resourcesRef = useScrollAnimation();
   
   return (
-    <section id="resources" className="py-16 bg-white">
+    <section id="resources" className="py-16 bg-transparent">
       <div className="container mx-auto px-4">
         <div ref={titleRef as React.RefObject<HTMLDivElement>} className="max-w-3xl mx-auto text-center mb-12 section-hidden">
           <h2 className="font-heading font-bold text-3xl md:text-4xl text-primary mb-4">Recursos disponibles</h2>
-          <p className="text-neutral-600">Información y servicios que pueden ayudarte</p>
+          <p className="text-white">Información y servicios que pueden ayudarte</p>
         </div>
 
         <div ref={resourcesRef as React.RefObject<HTMLDivElement>} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 section-hidden">
